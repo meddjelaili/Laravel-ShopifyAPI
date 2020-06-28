@@ -13,7 +13,7 @@ class ShopifyAuth extends AbstractProvider
 
     protected $shopURL;
 
-    protected $adminPath = "/admin/";
+    protected $adminPath = "/admin/api/2020-04/";
 
     protected $requestPath;
 

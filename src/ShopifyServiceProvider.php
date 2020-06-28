@@ -29,13 +29,18 @@ class ShopifyServiceProvider extends ServiceProvider
     {
 
         $this->app->singleton(
-            ShopifyContract::class, function($app) {
+            ShopifyContract::class,
+            function ($app) {
 
-             $shopifyAuth = new ShopifyAuth($app['request'], config( 'shopify.key' ),
-                                config( 'shopify.secret' ), config( 'shopify.redirectURL' ));
+                $shopifyAuth = new ShopifyAuth(
+                    $app['request'],
+                    config('shopify.key'),
+                    config('shopify.secret'),
+                    config('shopify.redirectURL')
+                );
 
-             return new Shopify($shopifyAuth);
-
-        });
+                return new Shopify($shopifyAuth);
+            }
+        );
     }
 }
