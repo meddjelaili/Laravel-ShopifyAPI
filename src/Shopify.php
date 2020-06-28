@@ -46,11 +46,11 @@ class Shopify implements ShopifyContract
 
         $allScope = $this->getAllScopes();
 
-        if (!array_intersect( $allScope, $scope ) == $scope) {
-            throw New InvalidArgumentException( 'invalid Scope' );
+        if (!array_intersect($allScope, $scope) == $scope) {
+            throw new InvalidArgumentException('invalid Scope');
         }
 
-        $this->apiCall = $this->shopifyAuth->stateless()->setShopURL( $shopURL )->scopes( $scope );
+        $this->apiCall = $this->shopifyAuth->stateless()->setShopURL($shopURL)->scopes($scope);
 
         $this->requestPath = $this->shopifyAuth->requestPath();
 
@@ -70,7 +70,7 @@ class Shopify implements ShopifyContract
      */
     public function retrieve($shopURL, $token)
     {
-        $this->apiCall = $this->shopifyAuth->stateless()->setShopURL( $shopURL );
+        $this->apiCall = $this->shopifyAuth->stateless()->setShopURL($shopURL);
 
         $this->requestPath = $this->shopifyAuth->requestPath();
 
@@ -96,7 +96,7 @@ class Shopify implements ShopifyContract
      */
     public function getUser()
     {
-        if($this->user != null) return $this->user;
+        if ($this->user != null) return $this->user;
         else throw new Exception("Must authenticate first!");
     }
 
@@ -137,7 +137,7 @@ class Shopify implements ShopifyContract
      */
     public function modify($endpoint, $options, $params = null)
     {
-        return $this->APICallWithOptions('put',$endpoint, $options, $params);
+        return $this->APICallWithOptions('put', $endpoint, $options, $params);
     }
 
 
@@ -150,7 +150,7 @@ class Shopify implements ShopifyContract
      */
     public function create($endpoint, $options, $params = null)
     {
-        return $this->APICallWithOptions('post',$endpoint, $options, $params);
+        return $this->APICallWithOptions('post', $endpoint, $options, $params);
     }
 
 
@@ -166,15 +166,16 @@ class Shopify implements ShopifyContract
      */
     protected function APICallWithoutOptions($requestType, $endpoint, $params = null)
     {
-        $response = $this->getHttpClient()->{$requestType}($this->buildRequestUrl($endpoint, $params),
+        $response = $this->getHttpClient()->{$requestType}(
+            $this->buildRequestUrl($endpoint, $params),
             [
                 'headers' => $this->getResponseHeaders($this->user->token)
-            ]);
+            ]
+        );
 
         $return = json_decode($response->getBody(), true);
 
         return $return;
-
     }
 
     /**
@@ -201,7 +202,6 @@ class Shopify implements ShopifyContract
         $return = json_decode($response->getBody(), true);
 
         return $return;
-
     }
 
     /**
@@ -213,7 +213,7 @@ class Shopify implements ShopifyContract
     protected function getParams(array $params = null)
     {
         if ($params == null) return null;
-        return '?' . http_build_query( $params, '', '&' );
+        return '?' . http_build_query($params, '', '&');
     }
 
 
@@ -227,11 +227,11 @@ class Shopify implements ShopifyContract
      */
     protected function buildRequestUrl($endpoint, $params = null)
     {
-        if($this->user == null)
+        if ($this->user == null)
             throw new Exception("Please authenticate user first!");
 
-        $requestPath = $this->requestPath . $endpoint . ".json". $this->getParams( $params );
-
+        $requestPath = $this->requestPath . $endpoint . ".json" . $this->getParams($params);
+        info('API REQUEST ' . $requestPath);
         return $requestPath;
     }
 
@@ -242,7 +242,7 @@ class Shopify implements ShopifyContract
      */
     protected function getAllScopes()
     {
-        return config( 'shopify.scopes' );
+        return config('shopify.scopes');
     }
 
     /**
@@ -306,7 +306,7 @@ class Shopify implements ShopifyContract
         $currAction = $endpoints->callbackAction($name);
 
         $parseArrs = array_values(
-            array_filter($args, function($e) {
+            array_filter($args, function ($e) {
                 return is_array($e) ? $e : null;
             })
         );
@@ -317,18 +317,20 @@ class Shopify implements ShopifyContract
          * /count, /{id}
          *
          */
-        $parseArgsSerialized = array_diff(array_map('serialize', $args),
-            array_map('serialize',$parseArrs));
+        $parseArgsSerialized = array_diff(
+            array_map('serialize', $args),
+            array_map('serialize', $parseArrs)
+        );
         $unserialized = array_map('unserialize', $parseArgsSerialized);
 
 
         $parseArgs = [];
-        foreach($unserialized as $items) {
-            if(is_integer($items)) $parseArgs[] = $items;
+        foreach ($unserialized as $items) {
+            if (is_integer($items)) $parseArgs[] = $items;
             else $additionalUri = '/' . $items;
         }
 
-        if(isset($additionalUri)) $endpoint = $endpoints->$name(...$parseArgs) . $additionalUri;
+        if (isset($additionalUri)) $endpoint = $endpoints->$name(...$parseArgs) . $additionalUri;
         else $endpoint = $endpoints->$name(...$parseArgs);
 
         /*
@@ -336,21 +338,18 @@ class Shopify implements ShopifyContract
          */
         $options = null;
         $params = null;
-        foreach($parseArrs as $arr)
-        {
-            if(array_keys($arr)[0] == $endpoints->categoryKey) $options = $arr;
+        foreach ($parseArrs as $arr) {
+            if (array_keys($arr)[0] == $endpoints->categoryKey) $options = $arr;
             else $params = $arr;
         }
 
 
         // call get(), create(), modify() and delete() methods
-        if($currAction == 'create' && $currAction == 'modify')
-        {
-            if($options == null) throw new Exception('invalid option passed');
+        if ($currAction == 'create' && $currAction == 'modify') {
+            if ($options == null) throw new Exception('invalid option passed');
 
             return $this->{$currAction}($endpoint, $options);
-        }
-        else return $this->{$currAction}($endpoint, $params);
+        } else return $this->{$currAction}($endpoint, $params);
     }
 
     /**

@@ -40,9 +40,8 @@ class ShopifyAuth extends AbstractProvider
      */
     public function requestPath()
     {
-        if($this->shopURL != null)
+        if ($this->shopURL != null)
             $this->requestPath = 'https://' . $this->shopURL . $this->adminPath;
-
         return $this->requestPath;
     }
 
@@ -54,9 +53,9 @@ class ShopifyAuth extends AbstractProvider
      */
     protected function getAuthUrl($state)
     {
-        $url =  $this->requestPath()."oauth/authorize";
+        $url =  $this->requestPath() . "oauth/authorize";
 
-        return $this->buildAuthUrlFromBase( $url, $state );
+        return $this->buildAuthUrlFromBase($url, $state);
     }
 
     /**
@@ -81,10 +80,12 @@ class ShopifyAuth extends AbstractProvider
         $userUrl = 'https://' . $this->shopURL . $this->adminPath . "shop.json";
 
 
-        $response = $this->getHttpClient()->get( $userUrl,
-                [
-                    'headers' => $this->getResponseHeaders($token)
-                ]);
+        $response = $this->getHttpClient()->get(
+            $userUrl,
+            [
+                'headers' => $this->getResponseHeaders($token)
+            ]
+        );
 
         $user = json_decode($response->getBody(), true);
 
@@ -118,9 +119,9 @@ class ShopifyAuth extends AbstractProvider
     public function checkCurrentApiLimit(): int
     {
         $limit = $this->responseHeaders['X-Shopify-Shop-Api-Call-Limit'] ??
-                 $this->responseHeaders['HTTP_X_SHOPIFY_SHOP_API_CALL_LIMIT'] ?? ['1/40'];
+            $this->responseHeaders['HTTP_X_SHOPIFY_SHOP_API_CALL_LIMIT'] ?? ['1/40'];
 
-        return (int)explode('/', $limit[0])[0];
+        return (int) explode('/', $limit[0])[0];
     }
 
 
@@ -137,5 +138,4 @@ class ShopifyAuth extends AbstractProvider
 
         return $authUrl;
     }
-
 }
