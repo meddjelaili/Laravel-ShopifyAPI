@@ -13,7 +13,7 @@ class ShopifyAuth extends AbstractProvider
 
     protected $shopURL;
 
-    protected $adminPath = "/admin/api/2020-04/";
+    protected $adminPath = "/admin/";
 
     protected $requestPath;
 
@@ -38,10 +38,10 @@ class ShopifyAuth extends AbstractProvider
      *
      * @return string
      */
-    public function requestPath()
+    public function requestPath($path = '')
     {
         if ($this->shopURL != null)
-            $this->requestPath = 'https://' . $this->shopURL . $this->adminPath;
+            $this->requestPath = 'https://' . $this->shopURL . $this->adminPath . $path;
         return $this->requestPath;
     }
 

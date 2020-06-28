@@ -52,7 +52,7 @@ class Shopify implements ShopifyContract
 
         $this->apiCall = $this->shopifyAuth->stateless()->setShopURL($shopURL)->scopes($scope);
 
-        $this->requestPath = $this->shopifyAuth->requestPath();
+        $this->requestPath = $this->shopifyAuth->requestPath('api/2020-04/');
 
         return $this;
     }
@@ -72,7 +72,7 @@ class Shopify implements ShopifyContract
     {
         $this->apiCall = $this->shopifyAuth->stateless()->setShopURL($shopURL);
 
-        $this->requestPath = $this->shopifyAuth->requestPath();
+        $this->requestPath = $this->shopifyAuth->requestPath('api/2020-04/');
 
         $this->user = $this->apiCall->userFromToken($token);
 
