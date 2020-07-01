@@ -231,7 +231,7 @@ class Shopify implements ShopifyContract
             throw new Exception("Please authenticate user first!");
 
         $requestPath = $this->requestPath . $endpoint . ".json" . $this->getParams($params);
-        info('API REQUEST ' . $requestPath);
+        // info('API REQUEST ' . $requestPath);
         return $requestPath;
     }
 
